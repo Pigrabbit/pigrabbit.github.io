@@ -9,10 +9,10 @@ module.exports = {
     siteTitle: `Pigrabbit`,
     siteTitleAlt: `Tech Pigrabbit`,
     siteLanguage: `ko`,
-    author: ``,
-    siteDescription: ``,
-    siteHeadline: ``,
-    siteUrl: ``,
+    author: `@pigrabbit`,
+    siteDescription: `Pigrabbit Tech Blog with Gatsby JS`,
+    siteHeadline: `Tech Pigrabbit`,
+    siteUrl: `https://pigrabbit.github.io/`,
     siteImage: ``
   },
   plugins: [
