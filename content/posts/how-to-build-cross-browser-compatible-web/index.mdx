@@ -1,0 +1,133 @@
+---
+title: How to build cross browser compatible web
+date: 2020-07-14
+tags:
+  - Babel
+  - Transpiling
+  - Browser Compatibility
+  - Polyfill
+  - core-js
+  - Javascript
+  - Frontend
+---
+
+## Browser Compatibility
+
+Browser의 호환성을 맞추는 것이 Frontend Engineer에게 가장 큰 고충 중에 하나라고 생각한다. 
+내가 작성한 Javascript 코드가, CSS 함수들이 브라우저에 따라 작동할 수도, 하지 않을 수도 있기 때문이다.
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/13795717/92191060-aee8f400-ee9d-11ea-86e4-478a2a24c9a3.png" alt="Browser Compatibility" width="600"/>
+</p>
+
+어떤 브라우저에서 어떤 기능이 지원되는지 확인하기 위해서는 [Can I Use](https://caniuse.com/) 또는 [MDN](https://developer.mozilla.org/en-US/)를 통해 알 수 있다.
+
+그러나, 근본적인 문제를 해결해주지는 못한다.
+
+Developer 입장에서 더 간결하고 직관적인 최신 ES syntax을 쓰고 싶지만, Browser Compatibility 때문에 오래 전 문법을 써야하는 근본적인 문제 말이다.
+이 비극을 말끔히 해결할 수 있는 방법은 없을까?
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/13795717/92189836-9deab380-ee9a-11ea-911e-002abd1b1892.png" alt="IE" width="400"/>
+</p>
+
+## Transpile
+
+Transpile이란 다른 실행 환경에서도 작동할 수 있도록 같은 language를 유지한 채 source code의 형태만 바꾸는 과정을 뜻한다.
+Javascript의 경우 [Babel](https://babeljs.io/)이 transpiler로 많이 사용된다.
+높은 ES syntax를 낮은 버전으로 바꿔줄 뿐만 아니라, Javascript의 superset인 typescript와 react에서 사용하는 jsx까지 transpile해준다.
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/13795717/92191570-0f2c6580-ee9f-11ea-8a12-bfbe21130994.png" alt="How babel works" width="600"/>
+</p>
+
+프로젝트 초기에 setup할 때가 아니라면 Babel 설정을 직접해볼 기회가 없을 것이다. 
+그러나 FE Engineer로서 브라우저 호환성을 어떻게 해쳐나가야하는지 Idea를 얻기 위해서 Babel에 대한 기초는 학습이 필요하다고 생각한다.
+
+### Install modules
+
+npm을 이용해 babel 설정에 필요한 module들을 설치한다.
+
+```bash
+$ npm i -D @babel/core @babel/cli @babel/preset-env 
+```
+
+### Configuration
+
+Babel 설정은 `.babelrc` 또는 `babel.config.js` 파일을 통해 할 수 있다.
+설정을 잡기 전에 plugin과 preset에 대한 개념을 짚고 넘어가자.
+
+**Plugin**: Javascript Source Code를 어떻게 transform 시킬지 정의해둔 program.
+Plugin 하나가 feature 하나를 변환 시킨다고 볼 수 있다. 
+규칙들을 하나하나 상세하게 적용할 때 사용한다.
+
+**Preset**: Babel이 transpile에 사용하는 plugin들의 집합.
+여러 규칙들을 한 번에 적용할 때 사용한다.
+`@babel/preset-env`가 범용적으로 사용된다.
+
+Babel 설정에 대한 구체적인 내용은 [Webpack - Babel boilerplate](https://github.com/Pigrabbit/boilerplate-webpack-babel) Github Repository로 대체하겠다.
+
+### Execute Transpile
+
+Babel Configuration을 마쳤으면, CLI를 명령어로 Javascript source code를 변환시킬 수 있다.
+
+```bash
+$ npx babel [target Javascript file]
+```
+
+## Polyfill
+
+특정 method의(`.flat()`, `.include()` 등) 지원범위가 브라우저마다 다른 경우가 있다.
+이 때에는 transpile로 해결할 수 없으며 Polyfill의 힘이 필요하다.
+
+`Array.flat()` method의 Browser Compatibility 맞춰준다고 가정하면,
+
+```bash
+$ npm i core-js@3
+```
+
+Babel config에 polyfill 관련 설정을 추가해준다.
+```javascript
+//...
+  const presets = [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "ie": 11
+        }
+        "useBuiltIns": "usage",
+        "corejs": 3,
+        "modules": false
+      }
+    ]
+  ]
+//...
+```
+
+그리고 `Array.flat()` method를 사용하는 souce code에 module을 import 해준다.
+
+```javascript
+import "core-js/modules/es.array.flat"
+```
+
+## Conclusion
+
+Transpile, Polyfill 이란 도구로 FE Engineer들이 Browser Compatibility를 극복해나가고 있다.
+
+![Diverse Browsers](https://user-images.githubusercontent.com/13795717/92195357-bdd4a400-eea7-11ea-8589-daebb5ff7900.png)
+
+앞으로 하나의 Browser로 통합되기보다는, 더 다양한 Web, Mobile Browser들이 출현할 것으로 조심스럽게 예상해본다.
+
+그렇게 된다면, FE Engineer로서 항상 사용자가 어떤 Channel로 웹서비스를 이용하는지 인식하고 있어야 할 것 이다.
+고도화된 tool로 다양한 Channel(Browser)를 대응하고 사용자들에게 만족스러운 경험을 줄 수 있을지 끊임없이 고민해 나가야 할 것 같다.
+
+## Reference
+
+[Babel JS](https://babeljs.io/)
+
+[Babel Crash Course](https://medium.com/@imranhsayed/introduction-to-babel-28da5af7e056)
+
+[Webpack Babel boilerplate](https://github.com/Pigrabbit/boilerplate-webpack-babel)
+
+[Core-js Github Repository](https://github.com/zloirock/core-js)
