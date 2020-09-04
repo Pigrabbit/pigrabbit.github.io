@@ -1,6 +1,7 @@
 ---
 title: How to build cross browser compatible web
 date: 2020-07-14
+timeToRead: 15
 tags:
   - Babel
   - Transpiling
@@ -9,8 +10,6 @@ tags:
   - core-js
   - Javascript
   - Frontend
-banner: ./defence-against-the-dark-arts.jpg
-timeToRead: 15
 ---
 
 ## Browser Compatibility
@@ -18,9 +17,7 @@ timeToRead: 15
 Browser의 호환성을 맞추는 것이 Frontend Engineer에게 가장 큰 고충 중에 하나라고 생각한다. 
 내가 작성한 Javascript 코드가, CSS 함수들이 브라우저에 따라 작동할 수도, 하지 않을 수도 있기 때문이다.
 
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/13795717/92191060-aee8f400-ee9d-11ea-86e4-478a2a24c9a3.png" alt="Browser Compatibility" width="600"/>
-</p>
+![Browser Compatibility](https://user-images.githubusercontent.com/13795717/92191060-aee8f400-ee9d-11ea-86e4-478a2a24c9a3.png)
 
 어떤 브라우저에서 어떤 기능이 지원되는지 확인하기 위해서는 [Can I Use](https://caniuse.com/) 또는 [MDN](https://developer.mozilla.org/en-US/)를 통해 알 수 있다.
 
@@ -29,9 +26,7 @@ Browser의 호환성을 맞추는 것이 Frontend Engineer에게 가장 큰 고�
 Developer 입장에서 더 간결하고 직관적인 최신 ES syntax을 쓰고 싶지만, Browser Compatibility 때문에 오래 전 문법을 써야하는 근본적인 문제 말이다.
 이 비극을 말끔히 해결할 수 있는 방법은 없을까?
 
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/13795717/92189836-9deab380-ee9a-11ea-911e-002abd1b1892.png" alt="IE" width="400"/>
-</p>
+![IE](https://user-images.githubusercontent.com/13795717/92189836-9deab380-ee9a-11ea-911e-002abd1b1892.png)
 
 ## Transpile
 
@@ -39,9 +34,7 @@ Transpile이란 다른 실행 환경에서도 작동할 수 있도록 같은 lan
 Javascript의 경우 [Babel](https://babeljs.io/)이 transpiler로 많이 사용된다.
 높은 ES syntax를 낮은 버전으로 바꿔줄 뿐만 아니라, Javascript의 superset인 typescript와 react에서 사용하는 jsx까지 transpile해준다.
 
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/13795717/92191570-0f2c6580-ee9f-11ea-8a12-bfbe21130994.png" alt="How babel works" width="600"/>
-</p>
+![How Babel Works](https://user-images.githubusercontent.com/13795717/92191570-0f2c6580-ee9f-11ea-8a12-bfbe21130994.png)
 
 프로젝트 초기에 setup할 때가 아니라면 Babel 설정을 직접해볼 기회가 없을 것이다. 
 그러나 FE Engineer로서 브라우저 호환성을 어떻게 해쳐나가야하는지 Idea를 얻기 위해서 Babel에 대한 기초는 학습이 필요하다고 생각한다.
