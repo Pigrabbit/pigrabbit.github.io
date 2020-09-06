@@ -1,7 +1,6 @@
 ---
 title: How to build cross browser compatible web
 date: 2020-07-14
-timeToRead: 15
 tags:
   - Babel
   - Transpiling
@@ -9,7 +8,6 @@ tags:
   - Polyfill
   - core-js
   - Javascript
-  - Frontend
 ---
 
 ## Browser Compatibility
@@ -17,7 +15,7 @@ tags:
 Browser의 호환성을 맞추는 것이 Frontend Engineer에게 가장 큰 고충 중에 하나라고 생각한다. 
 내가 작성한 Javascript 코드가, CSS 함수들이 브라우저에 따라 작동할 수도, 하지 않을 수도 있기 때문이다.
 
-![Browser Compatibility](https://user-images.githubusercontent.com/13795717/92191060-aee8f400-ee9d-11ea-86e4-478a2a24c9a3.png)
+![Browser Compatibility](./browser-compatibility.jpg)
 
 어떤 브라우저에서 어떤 기능이 지원되는지 확인하기 위해서는 [Can I Use](https://caniuse.com/) 또는 [MDN](https://developer.mozilla.org/en-US/)를 통해 알 수 있다.
 
@@ -26,7 +24,7 @@ Browser의 호환성을 맞추는 것이 Frontend Engineer에게 가장 큰 고�
 Developer 입장에서 더 간결하고 직관적인 최신 ES syntax을 쓰고 싶지만, Browser Compatibility 때문에 오래 전 문법을 써야하는 근본적인 문제 말이다.
 이 비극을 말끔히 해결할 수 있는 방법은 없을까?
 
-![IE](https://user-images.githubusercontent.com/13795717/92189836-9deab380-ee9a-11ea-911e-002abd1b1892.png)
+![IE](./ie.jpg)
 
 ## Transpile
 
@@ -34,7 +32,7 @@ Transpile이란 다른 실행 환경에서도 작동할 수 있도록 같은 lan
 Javascript의 경우 [Babel](https://babeljs.io/)이 transpiler로 많이 사용된다.
 높은 ES syntax를 낮은 버전으로 바꿔줄 뿐만 아니라, Javascript의 superset인 typescript와 react에서 사용하는 jsx까지 transpile해준다.
 
-![How Babel Works](https://user-images.githubusercontent.com/13795717/92191570-0f2c6580-ee9f-11ea-8a12-bfbe21130994.png)
+![How Babel Works](./how-babel-works.jpg)
 
 프로젝트 초기에 setup할 때가 아니라면 Babel 설정을 직접해볼 기회가 없을 것이다. 
 그러나 FE Engineer로서 브라우저 호환성을 어떻게 해쳐나가야하는지 Idea를 얻기 위해서 Babel에 대한 기초는 학습이 필요하다고 생각한다.
@@ -110,7 +108,7 @@ import "core-js/modules/es.array.flat"
 
 위에서 다룬 것처럼 FE Engineer들은 Transpile, Polyfill 이란 도구로 Browser Compatibility를 극복해나가고 있다.
 
-![Diverse Browsers](https://user-images.githubusercontent.com/13795717/92195357-bdd4a400-eea7-11ea-8589-daebb5ff7900.png)
+![Diverse Browsers](./diverse-browsers.jpg)
 
 앞으로 하나의 Browser로 통합되기보다는, 더 다양한 Web, Mobile Browser들이 출현할 것으로 조심스럽게 예상해본다.
 
