@@ -10,10 +10,10 @@ module.exports = {
     siteTitleAlt: `Tech Pigrabbit`,
     siteLanguage: `ko`,
     author: `@pigrabbit`,
-    siteDescription: `Pigrabbit Tech Blog with Gatsby JS`,
+    siteDescription: `Pigrabbit's Tech Blog`,
     siteHeadline: `Tech Pigrabbit`,
     siteUrl: `https://pigrabbit.github.io/`,
-    siteImage: ``
+    siteImage: `/banner.jpg`
   },
   plugins: [
     {
@@ -56,9 +56,9 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `minimal-blog - @lekoarts/gatsby-theme-minimal-blog`,
-        short_name: `minimal-blog`,
-        description: `Typography driven, feature-rich blogging theme with minimal aesthetics. Includes tags/categories support and extensive features for code blocks such as live preview, line numbers, and code highlighting.`,
+        name: `Pigrabbit's Tech Blog`,
+        short_name: `Tech Blog`,
+        description: `Tech Blog deals with Web development`,
         start_url: `/`,
         background_color: `#fff`,
         theme_color: `#6B46C1`,
