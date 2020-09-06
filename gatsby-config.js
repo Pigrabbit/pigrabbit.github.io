@@ -37,7 +37,7 @@ module.exports = {
           },
           {
             name: `LinkedIn`,
-            url: `https://www.linkedin.com/in/donghyuk-kang-b37903102/`,
+            url: `https://www.linkedin.com/in/donghyuk-kang`,
           },
           {
             name: `Instagram`,
