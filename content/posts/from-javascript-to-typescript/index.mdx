@@ -21,7 +21,7 @@ Application이 커질수록 **undefined** 나 **TypeError** 에게 고통받고 
 반복적으로 쓰는 패턴을 발견했습니다.
 
 함수가 parameter로 받은 것이 string 인지, number 인지 알 수가 없었고,
-그로 인해 연산전에 항상 `parseInt()`를 이용해 변수를 정제해는 코드가 들어가 있었습니다.
+그로 인해 연산전에 항상 `parseInt()`를 이용해 변수를 정제하는 코드가 들어가 있었습니다.
 
 뿐만 아니라 parameter로 전달받은 object의 form을 알지 못하기 때문에 항상 key가 있는지
 null check를 하는 코드가 반복적으로 발견되었습니다.

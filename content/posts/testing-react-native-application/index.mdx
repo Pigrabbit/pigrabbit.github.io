@@ -1,0 +1,299 @@
+---
+title: Testing React Native Application
+date: 2021-01-29
+tags:
+  - React Native
+  - Test
+---
+
+> React Native Application에 테스트 자동화를 적용하게 된 이야기를 정리합니다
+
+여러분의 React/React-Native 프로젝트에 테스트 자동화가 구축되어 있나요? 
+Test Driven Development(이하 TDD)를 하는 팀도 있을 것이고, 
+TDD는 아니지만 테스트 코드를 구축하고 있는 팀도 있을 것이며 테스팅을 전혀 하지 않는 팀도 있을 것입니다. 
+Frontend 또는 Client 프로젝트의 UI 컴포넌트 테스트, Rendering 테스트의 경우 그 효용성, 효율성에 있어 갑론을박도 있습니다.
+
+그럼에도 불구하고 어떤 이유로 테스팅을 도입하게 되었고 어떤 것을, 어떤 방법으로 테스트하게 되었는지 이 글을 통해 정리해보고자 합니다.
+
+## Why test
+
+[React Native reference](https://reactnative.dev/docs/testing-overview) 에서는 테스트 코드의 효과를 아래와 같이 나열하고 있습니다.
+
+- 기능 추가 후에 Application의 동작을 검증할 수 있다.
+- 기존 코드 리팩토링 후에 Application의 동작을 검증할 수 있다.
+- dependency library를 업데이트 후에 Application의 동작을 검증할 수 있다.
+- bug case를 테스트코드로 작성한 뒤 그것을 pass 하도록 코드를 수정해 bug fix를 할 수 있다.
+- 미래에 join하는 팀원들에게  documentation을 제공해줄 수 있다.
+- QA cost를 절감할 수 있다.
+
+제 경우에는 기존 컴포넌트를 리팩토링 하면서 테스트 코드의 필요성을 크게 느꼈습니다. 
+프로젝트 곳곳에서 활용되고 있는 컴포넌트의 스타일을 계산하는 로직에 대한 리팩토링이었기 때문에 영향범위가 매우 컸습니다. 
+테스트 코드 없이 리팩토링 전후의 렌더링되는 스타일을 직접 눈으로 확인하는 것은 불가능에 가까웠기 때문에 테스트라는 장치가 필요했습니다. 
+
+지금 당장은 안전 장치로서 가치가 있지만 테스트 코드가 미래에 줄 가치에 대해서도 고려했습니다. 
+미래에 프로젝트에 합류할 동료를 위한 문서화의 역할을 할 수 있을 것이라는 기대와 
+개발자로서 보다 testable한 code를 작성하도록 노력하게 만들 것이라는 기대로 시작하게 되었습니다.
+
+## What to test
+
+이런 이유에서 테스트 코드를 작성하게 되었기 때문에 자연스럽게 UI 컴포넌트에 대한 테스트 코드를 가장 먼저 추가하게 되었습니다. 
+컴포넌트 테스트에서는 유저 interaction에 대한 컴포넌트의 변경을 중점적으로 테스트하였습니다. 
+반면, 비즈니스 로직에 의해 쉽게 변경될 수 있는 컴포넌트의 state나, 부모로부터 전달받는 props에 대해서는 검증하지 않았습니다.
+
+UI 컴포넌트 뿐만 아니라, utility 함수들에 대해 단위테스트를 추가했으며 
+redux reducer와 action creator(async action creator)에 대해서도 테스트 코드를 작성했습니다.
+
+## How to test
+
+테스트 프레임워크는 [Jest](https://jestjs.io/en/)를, 라이브러리는 [react-native-testing-library](https://github.com/callstack/react-native-testing-library)를 활용했습니다. 
+또한 [testing-library/jest-native](https://github.com/testing-library/jest-native)의 matcher를 이용해서 assertion을 했습니다.
+
+### UI component test
+
+`<Text />` 컴포넌트를 `<TouchableOpacity />` 로 감싼 간단한 `<ButtonPrimary />` 컴포넌트를 만들었습니다.
+이 컴포넌트는 `inverted` 여부에 따라 2가지 스타일로 렌더되며 press했을 때, `props`로 전달한 callback을 실행하는 기능을 합니다.
+
+``` typescript
+// ButtonPrimary.tsx - before refactoring
+import { PALETTE } from 'constants/styles';
+import React from 'react';
+import { If, Else, Then } from 'react-if';
+import { Text, TouchableOpacity } from 'react-native';
+import tailwind from 'tailwind-rn';
+
+interface Props {
+  label: string;
+  onPress: () => void;
+  inverted?: boolean;
+	disabled?: boolean;
+}
+
+export const ButtonPrimary: React.FC<Props> = ({
+  label,
+  onPress,
+  inverted = false,
+	disabled = false,
+}) => {
+  return (
+    <If condition={!inverted}>
+      <Then>
+        <TouchableOpacity
+          style={{
+            ...tailwind('w-full py-2 rounded-lg'),
+            backgroundColor: PALETTE.BEIGE,
+          }}
+          onPress={onPress}
+					disabled={disabled}
+          activeOpacity={0.7}>
+          <Text
+            style={{
+              ...tailwind('text-lg text-center text-white'),
+              fontFamily: 'SpoqaHanSansNeo-Bold',
+            }}
+            allowFontScaling={false}
+            selectable={false}>
+            {label}
+          </Text>
+        </TouchableOpacity>
+      </Then>
+      <Else>
+        <TouchableOpacity
+          style={tailwind('w-full py-2 rounded-lg bg-white')}
+          onPress={onPress}
+					disabled={disabled}
+          activeOpacity={0.7}>
+          <Text
+            style={{
+              ...tailwind('text-lg text-center'),
+              color: PALETTE.BEIGE,
+              fontFamily: 'SpoqaHanSansNeo-Bold',
+            }}
+            allowFontScaling={false}
+            selectable={false}>
+            {label}
+          </Text>
+        </TouchableOpacity>
+      </Else>
+    </If>
+  );
+};
+
+```
+
+리팩토링 이전에 사용자의 press interaction에 따라 버튼 컴포넌트가 어떻게 변경되는지 specification을 정의 했으며, 
+inverted-not inverted 두 가지 스타일에 대한 test case도 만들었습니다.
+
+``` javascript
+// ButtonPrimary.spec.js
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react-native';
+import { ButtonPrimary } from './ButtonPrimary';
+import { PALETTE } from 'constants/styles';
+
+describe('ButtonPrimary', () => {
+  const mockCb = jest.fn();
+
+  afterEach(() => {
+    mockCb.mockClear();
+  });
+
+  it('when pressed, executes callback function', () => {
+    const { getByTestId } = render(
+      <ButtonPrimary label="submit" onPress={mockCb} />,
+    );
+    const button = getByTestId('button-primary');
+
+    fireEvent.press(button);
+
+    expect(mockCb).toHaveBeenCalledTimes(1);
+  });
+
+  it('when disabled, it is not able to execute callback function', () => {
+    const { getByTestId } = render(
+      <ButtonPrimary label="submit" onPress={mockCb} disabled={true} />,
+    );
+    const button = getByTestId('button-primary');
+
+    fireEvent.press(button);
+
+    expect(mockCb).not.toHaveBeenCalled();
+  });
+
+  it('when inverted, the label is beige and background is white', () => {
+    const { getByTestId, getByText } = render(
+      <ButtonPrimary label="submit" onPress={mockCb} inverted={true} />,
+    );
+    const button = getByTestId('button-primary');
+
+    expect(getByText('submit')).toHaveStyle({ color: PALETTE.BEIGE });
+    expect(button).toHaveStyle({ backgroundColor: PALETTE.WHITE });
+  });
+
+  it('when not inverted, the label is white and background is beige', () => {
+    const { getByTestId, getByText } = render(
+      <ButtonPrimary label="submit" onPress={mockCb} />,
+    );
+    const button = getByTestId('button-primary');
+
+    expect(getByText('submit')).toHaveStyle({ color: PALETTE.WHITE });
+    expect(button).toHaveStyle({ backgroundColor: PALETTE.BEIGE });
+  });
+});
+
+```
+
+테스트 코드라는 안전장치가 생기고 나니 안심하고 리팩토링을 진행할 수 있었습니다.
+
+``` typescript
+// ButtonPrimary.tsx
+import { PALETTE } from 'constants/styles';
+import React from 'react';
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  ViewStyle,
+} from 'react-native';
+import tailwind from 'tailwind-rn';
+
+interface Props {
+  label: string;
+  onPress: () => void;
+  disabled?: boolean;
+  inverted?: boolean;
+  testID?: string;
+}
+
+export const ButtonPrimary: React.FC<Props> = ({
+  label,
+  onPress,
+  disabled = false,
+  inverted = false,
+  testID = 'button-primary',
+}) => {
+  return (
+    <TouchableOpacity
+      style={StyleSheet.compose(
+        tailwind('w-full py-2 rounded-lg') as StyleProp<ViewStyle>,
+        inverted
+          ? { backgroundColor: PALETTE.WHITE }
+          : { backgroundColor: PALETTE.BEIGE },
+      )}
+      onPress={onPress}
+      disabled={disabled}
+      activeOpacity={0.7}
+      testID={testID}>
+      <Text
+        style={StyleSheet.compose(
+          {
+            ...tailwind('text-lg text-center'),
+            fontFamily: 'SpoqaHanSansNeo-Bold',
+          },
+          inverted ? { color: PALETTE.BEIGE } : { color: PALETTE.WHITE },
+        )}
+        allowFontScaling={false}
+        selectable={false}>
+        {label}
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
+```
+
+### Unit test of utility functions
+
+Utility 함수의 경우 testable 하게 작성했다면 어렵지 않게 테스트 코드를 작성할 수 있습니다.
+
+``` typescript
+// util.ts
+export const removeHTMLBoldTag = (html: string) =>
+  html.replace(/<b>/g, '').replace(/<\/b>/g, '');
+
+// util.spec.js
+const { removeHTMLBoldTag } = require("utils");
+
+describe('removeHTMLBoldTag', () => {
+  it('cleans any HTML <b> tag in markup', () => {
+    const html = `<p>Hello <b>World</b></p>`;
+    expect(removeHTMLBoldTag(html)).toEqual(`<p>Hello World</p>`)
+  })
+
+  it('cleans unpaired HTML <b> tags', () => {
+    const html = `<p><b>Hello <b>World</b></p>`;
+    expect(removeHTMLBoldTag(html)).toEqual(`<p>Hello World</p>`)
+  })
+
+  it('ignores line break', () => {
+    const html = `<p>Hello <br><b>World</b></p>`;
+    expect(removeHTMLBoldTag(html)).toEqual(`<p>Hello <br>World</p>`)
+  })
+})
+
+```
+
+### Reducer and action creators test
+
+redux reducer와 action creator에 대한 샘플 테스트 코드는 [여기](https://redux.js.org/recipes/writing-tests)에서 확인할 수 있습니다.
+
+## When to test
+
+테스트에 대해 필요성을 느끼고, 어떤 테스트를 어떻게 할지까지 정했다면 남은건 언제 테스트 코드를 작성할지 정하는 일입니다. 
+TDD가 익숙하다면 writing a failing test - make the test pass - refactor의 순서로 테스트 코드를 작성할 수 있을 것입니다. 
+그렇지 **않은** 경우 언제 테스트를 작성하는게 좋을까요?
+
+테스팅을 하지 않던 프로젝트에 테스팅을 적용한다는 상황을 가정할 때, 
+개인적으로는 기존 코드의 경우 리팩토링 이전, 새로운 코드의 경우 기능 구현 이후가 적절하다고 생각합니다. 
+리팩토링 이전에 테스트 코드를 작성하면 개발자에게 안전장치를 제공할 수 있으며 
+새로운 기능을 개발한 뒤 테스트 코드를 작성하면 미래에 유지보수할 때 문서화 역할을 하며 생산성을 높여줄 수 있다고 생각하기 때문입니다.
+
+그렇다면 작성한 테스트코드로 언제 테스트를 하는 것이 좋을까요? 
+Application의 안정성을 위해서는 자주하면 좋다고 생각합니다. 
+개인적으로 commit전에 pre-commit hook을 이용해 test를 실행하고, Application build script에 테스트 실행 script를 추가하여 검증하는 방법을 사용하고 있습니다.
+
+## Conclusion
+
+테스트가 안정적인 Application을 만들어가는데 도움을 준다는 것은 분명한 사실입니다. 
+다만 테스트를 적용할지 고민하는 것은 테스트 코드를 작성하는데 들어가는 비용 때문일 것입니다. 
+숙련되지 않은 상태에서 TDD를 고집하거나, 테스트 커버리지 수치에 목 매다는것보다는 Benefit-Cost를 고려하면서 경제적으로 테스트코드를 작성해나가는 것이 필요하지 않을까 생각하며 글을 줄입니다.
