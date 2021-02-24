@@ -1,5 +1,5 @@
 ---
-title: Deploy Deep Learning model with React Native
+title: Deploying Deep Learning model with React Native
 date: 2021-02-24
 tags:
   - Object Detection
@@ -9,7 +9,7 @@ tags:
 banner: ./tensorflow-js.jpg
 ---
 
-> Deploying 'Helmet Detection model' with React Native application
+> How I deployed 'Helmet Detection' model with React Native application
 
 The problem I wanted to solve was to check whether person wearing helmet with mobile application.
 In here, I used Bikes Helmet Dataset and SSD MobileNet v2 320x320 model(provided by Tensorflow Object Detection API).
@@ -349,7 +349,6 @@ Prediction result is data of boxes, scored and classes from the output of infere
 Detection objects are processed object in order to render bounding box and score on the image.
 
 ```tsx
-
 const App = () => {
 	const [predictedResult, setPredictedResult] = useState<{
     boxes: unknown;
@@ -378,75 +377,6 @@ When user press **infer** button, it converts taken photo into tensor(using `fet
 Then this tensor passed into `inference()` function which executes inferencing.
 The output of inference is stored in component as state(`predictionResult`).
 When the prediction result changed, it generates detection objects which will be used in rendering bounding box.
-
-```tsx
-const imageWidth = Dimensions.get("window").width;
-const threshold = 0.5;
-
-const App = () => {
-  // ...
-
-  const inference = useCallback(async (imageTensor: tf.Tensor3D) => {
-    if (!imageTensor || isInferencing) return;
-    try {
-      const predictions: tf.Tensor<tf.Rank>[] = await MODEL.executeAsync(
-        imageTensor.transpose([0, 1, 2]).expandDims()
-      );
-      const boxes = predictions[5].arraySync();
-      const scores = predictions[4].arraySync();
-      const classes = predictions[2].dataSync();
-
-      setPredictedResult({ boxes, scores, classes });
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!predictedResult || !predictedResult.scores) return;
-
-    const { boxes, scores, classes } = predictedResult;
-    const currentDetectionObjects = [];
-
-    scores[0].forEach((score, idx) => {
-      if (score > threshold) {
-        const bbox = [];
-        const minY = boxes[0][idx][0] * imageWidth;
-        const minX = boxes[0][idx][1] * imageWidth;
-        const maxY = boxes[0][idx][2] * imageWidth;
-        const maxX = boxes[0][idx][3] * imageWidth;
-        bbox[0] = minX;
-        bbox[1] = minY;
-        bbox[2] = maxX - minX;
-        bbox[3] = maxY - minY;
-
-        currentDetectionObjects.push({
-          class: classes[idx],
-          label: classesDir[classes[idx]].name,
-          score: score.toFixed(4),
-          bbox: bbox,
-        });
-      }
-    });
-
-    setDetectionObjects(currentDetectionObjects);
-  }, [predictedResult]);
-
-  return (
-    // ...
-    <Button
-      title={"infer"}
-      onPress={async () => {
-        const response = await fetch(imageUri, {}, { isBinary: true });
-        const imageDataArrayBuffer = await response.arrayBuffer();
-        const imageData = new Uint8Array(imageDataArrayBuffer);
-        const imageTensor = decodeJpeg(imageData);
-        await inference(imageTensor);
-      }}
-    />
-  );
-};
-```
 
 ```tsx
 const imageWidth = Dimensions.get("window").width;
