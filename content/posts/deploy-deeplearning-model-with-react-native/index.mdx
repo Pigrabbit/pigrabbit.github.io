@@ -31,7 +31,7 @@ So here, I decided to choose the approach depending on which dataset I could be 
 
 After few hours of googling, luckily, I could find the 'Bikes Helmet Dataset' out.
 It includes 764 images and annotations in PascalVOC format.
-Accordingly, I decided to solve this problem by object detection apporach.
+Accordingly, I decided to solve this problem by object detection approach.
 
 ## Data preparation
 
@@ -166,11 +166,11 @@ In this task, each case could be described as below.
 - True Positive: A person is wearing a helmet, model detects a person with a helmet
 - True Negative: A person is not wearing a helmet, model detects a person without a helmet
 - False Positive: A person is not wearing a helmet, model detects a person with a helmet
-- False Negative: A person is wearing a helmet, model detects a person with a helmet
+- False Negative: A person is wearing a helmet, model detects a person without a helmet
 
 IoU, which stands for Intersection of Union is given by the ratio of the area of intersection and area of union of the predicted bounding box and ground truth bounding box.
 
-![iou-concept](./iou-concpet.jpg)
+![iou-concept](./iou-concept.jpg)
 
 By Comparing mAP of our model(0.319) to it of SSD MobileNet v2 320x320(0.202) provided by TensorFlow 2 Detection Model Zoo, the model seems to be trained well.
 
@@ -246,6 +246,7 @@ web_model
 #### Time to write some code
 
 Now we are ready to develop a react-native application which can inference the image on device.
+(Entire code for the application is available in my [github repository](https://github.com/Pigrabbit/rn-object-detection))
 
 First of all, [create React Native application](https://reactnative.dev/blog/2017/03/13/introducing-create-react-native-app),
 and place converted model in the `assets/` directory.
@@ -456,6 +457,8 @@ After numerous steps, we could eventually check if person wearing a bike helmet 
 
 ![in-app-inference-2](./app-test-small-2.jpg)
 
+Entire code for the application is available in my [github repository](https://github.com/Pigrabbit/rn-object-detection)
+
 ## Conclusion
 
 You might be disappointed with recall and precision of this model.
@@ -470,10 +473,10 @@ All above steps were only quick prototyping, so hyper parameter tuning and other
 
 ## Reference
 
-[Custom object detection in the browser using TensorFlow.js](!https://blog.tensorflow.org/2021/01/custom-object-detection-in-browser.html)
+[Custom object detection in the browser using TensorFlow.js](https://blog.tensorflow.org/2021/01/custom-object-detection-in-browser.html)
 
-[TensorFlow js Model Zoo](!https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md)
+[TensorFlow js Model Zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md)
 
-[Breaking down Mean Average Precision (mAP)](!https://towardsdatascience.com/breaking-down-mean-average-precision-map-ae462f623a52)
+[Breaking down Mean Average Precision (mAP)](https://towardsdatascience.com/breaking-down-mean-average-precision-map-ae462f623a52)
 
-[TensorFlow.js for React Native is here!](!https://blog.tensorflow.org/2020/02/tensorflowjs-for-react-native-is-here.html)
+[TensorFlow.js for React Native is here!](https://blog.tensorflow.org/2020/02/tensorflowjs-for-react-native-is-here.html)
