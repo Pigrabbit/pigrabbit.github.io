@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+<url> <loc>https://pigrabbit.github.io/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/blog</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/fix-wrong-abstraction</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/say-hello-to-svelte</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/enhance-user-experience-with-animation-in-react-native-application</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/deploying-deep-learning-model-with-react-native</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/testing-react-native-application</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/from-javascript-to-typescript</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/between-client-side-rendering-and-server-side-rendering</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/optimize-web-site-with-image-lazy-loading</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/observer-design-pattern-in-frontend</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/build-your-own-vanilla-javascript-spa-router</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/how-to-build-cross-browser-compatible-web</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/about</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/abstraction</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/animation</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/architecture</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/babel</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/deep-learning</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/design-pattern</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/framework</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/inversion-of-control</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/javascript</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/object-detection</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/optimization</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/performance</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/polyfill</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/react</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/react-native</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/spa</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/svelte</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/tensorflow-js</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/test</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/typescript</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/user-experience</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/migration</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://pigrabbit.github.io/tags/router</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+</urlset>
