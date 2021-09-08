@@ -1,0 +1,285 @@
+---
+title: Fix wrong abstraction
+date: 2021-08-12
+tags:
+  - Abstraction
+  - Inversion of Control
+  - Javascript
+  - Typescript
+  - React
+  - React Native
+banner: ./dry_principle.jpg
+---
+
+프로그래머로서 가장 기본적으로 지키려고 노력하는 원칙 중 하나가 DRY(Do not Repeat Yourself)라고 생각합니다. 
+같은 code snippet이 코드베이스 이곳저곳에서 반복되는 것을 눈 뜨고 지켜봐 줄 수 없기 때문입니다. 
+저 또한 코드베이스에서 반복되는 로직이 발견되면 해당 로직을 추출해서 함수, 클래스 또는 모듈로 만들고 이를 재활용하려고 노력합니다.
+
+그러나 이런 추상화가 부메랑으로 되돌아 오는것을 경험해본 적은 없나요? 
+이 글에서는 wrong abstraction이 가져올 수 있는 부메랑 효과와 이를 해결할 수 있는 방법에 대해 이야기하고자 합니다.
+
+### Life Cycle of (wrong) Abstraction
+
+Sandi Metz [wrong abstraction](https://sandimetz.com/blog/2016/1/20/the-wrong-abstraction) article에 따르면 wrong abstraction은 아래와 같은 패턴을 보인다고 합니다.
+
+1. 프로그래머 A가 코드 중복을 확인한다
+2. A가 중복 코드를 추출해 모듈을 만든다. 이것이 새로운  abstraction을 만든다
+3. A가 기존 코드 중복을 새로 만든 abstraction으로 교체한다
+4. time files...
+  ![several_months_later](./several_months_later.jpg)
+5. 기능 추가 요청이 들어오고 이것이 A가 만들어둔 abstraction으로 대응 가능한 범위이다
+6. 프로그래머 B가 추가 요청된 기능을 개발한다. 기존 abstraction에 parameter를 전달받아 그에 따라 분기처리 한다
+7. 5-6번의 과정이 반복된다. parameter는 계속해서 증가하고 조건문도 많아지며 loop는 더 이상 이해하기 어려울 정도로 복잡해진다
+
+이런 쳇바퀴에서 돌게 되는 것을 인식했을 때 여러분이라면 어떻게 하시겠습니까? 
+아마 관성적으로 **기존에 해왔던대로** parameter를 추가하고 분기처리를 추가하는 편이 가장 쉽겠죠. 
+그러나 그것이 지속될 수록 코드베이스가 이해하기 어려워지는 것은 불보듯 뻔한 일입니다.
+
+### Inversion of Control
+
+두 모듈 A, B가 있을 때 B가 A의 메소드를 사용한다면 'B가 A에 의존한다. B는 A에 의존성이 있다'라고 합니다.
+
+Inversion of Control은 이런 의존성이 있는 상황에서 abstraction의 복잡성을 줄여줄 수 있습니다. 
+B가 A에 구현된 메소드 그대로를 실행하기보다는 B가 custom 메소드를 전달하여 A가 실행할 수 있도록 control의 주체를 뒤엎는 것 입니다. 
+이 방법으로 위에서 언급했던 wrong abstraction의 life cycle로 인해 코드베이스의 복잡성이 증가하는 문제도 해결해 줄 수 있습니다.
+
+#### Example Code
+
+간단한 react native 코드를 이용해서 wrong abstraction life cycle로 발생하는 문제와 inversion of control 의 적용을 살펴보려고 합니다. 
+(real world 코드는 아니니 참고만 하세요 :) )
+
+아래와 같이 사용자에게 입력을 받는 간단한 InputForm 컴포넌트가 있다고 하겠습니다.  
+이 컴포넌트는 render props에 따라 input 아래쪽에 text를 노출합니다.
+
+```tsx
+interface Props extends TextInputProps {
+  helperText?: string
+}
+
+export default function InputForm({ helperText, ...props }: Props) {
+  const [value, setValue] = useState('');
+
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={styles.textInput}
+        value={value}
+        onChangeText={text => setValue(text)}
+				{...props}
+      />
+      {helperText && (
+        <Text style={styles.helperText}>{helperText}</Text>
+      )}
+    </View>
+  );
+}
+```
+
+새로운 기능 개발요청이 들어왔습니다. 
+
+> 유저의 id를 입력받는 인풋에서는 입력값에 공백을 제거해주세요
+
+`useEffect` hook에서 userId 를 입력받는 InputForm인 경우 공백을 없애주는 전처리를 수행하도록 구현했습니다.
+
+```tsx
+interface Props extends TextInputProps {
+  helperText?: string;
+  type?: 'userId';
+}
+
+export default function InputForm({ type, helperText, ...props }: Props) {
+  // ...
+
+  useEffect(() => {
+    if (type === 'userId') {
+      setValue(cur => cur.replace(/ /g, ''));
+    }
+  }, [value, type]);
+
+  // ...
+}
+```
+
+몇 주 뒤 새로운 기능 개발 요청이 들어왔습니다.
+
+> OTP 인증번호를 입력받는 인풋에서는 숫자만 입력가능하도록 해주세요
+
+간단하게 parameter에 따라 else-if block을 하나 추가하여 해결했습니다.
+
+```tsx
+interface Props extends TextInputProps {
+  helperText?: string;
+  type?: 'userId' | 'otpCode';
+}
+
+// ...
+useEffect(() => {
+  if (type === 'userId') {
+    setValue(cur => cur.replace(/ /g, ''));
+  } else if (type === 'otpCode') {
+    setValue(cur => cur.replace(/[^0-9]/, ''));
+  }
+}, [value, type]);
+
+// ...
+```
+
+다시 몇 주 뒤 새로운 기능 개발 요청이 들어옵니다.
+
+> 휴대폰 번호를 입력받는 인풋에서 {3}-{4}-{4} 자리 형식으로 '-'를 자동으로 추가해주세요
+
+조금 번거롭지만 마찬가지로 `if-else` block을 하나 추가하여 기능을 추가했습니다.
+
+```tsx
+// InputForm.tsx
+interface Props extends TextInputProps {
+  type?: 'userId' | 'otpCode' | 'phoneNumber';
+}
+
+// ...
+useEffect(() => {
+  if (type === 'userId') {
+    setValue(cur => cur.replace(/ /g, ''));
+  } else if (type === 'otpCode') {
+    setValue(cur => cur.replace(/[^0-9]/, ''));
+  } else if (type === 'phoneNumber') {
+    setValue(cur => {
+      let result = cur;
+
+      if (/^[0-9]{3}-[0-9]{5}$/.test(cur)) {
+        result = `${cur.slice(0, 8)}-${cur.slice(cur.length - 1)}`;
+      } else if (/^[0-9]{4}$/.test(cur)) {
+        result = `${cur.slice(0, cur.length - 1)}-${cur.slice(
+          cur.length - 1,
+        )}`;
+      }
+
+      return result;
+    });
+  }
+}, [value, type]);
+
+// App.tsx
+const App = () => {
+  return (
+    <ScrollView keyboardShouldPersistTaps="handled">
+      <InputForm type="userId" placeholder="enter your user ID" />
+      <InputForm
+        type="otpCode"
+        keyboardType="number-pad"
+        placeholder="enter verification code"
+      />
+      <InputForm
+        type="phoneNumber"
+        keyboardType="number-pad"
+        placeholder="enter your phonenumber"
+      />
+    </ScrollView>
+  )
+};
+```
+
+혹시 이쯤되면 느껴지시나요? InputForm 컴포넌트가 전처리해야할 데이터 유형은 무궁무진하게 늘어날 것이고 각각에 따라 전처리하는 로직이 추가될 것이라는 예감이요.
+
+현재 형태의 abstraction(`type` render props에 따라 InputForm 컴포넌트에서 전처리)로는 위에서와 마찬가지로 `if-else` 블록을 추가해가며 대응할 수 밖에 없을 것입니다. 
+
+여기에 inversion of control을 적용해보겠습니다.
+
+```tsx
+// InputForm.tsx
+interface Props extends TextInputProps {
+  helperText?: string;
+  onValueUpdated?: (rawValue: string) => string;
+}
+
+export default function InputForm({onValueUpdated, ...props}: Props) {
+  const [value, setValue] = useState('');
+
+  useEffect(() => {
+    if (onValueUpdated) {
+      setValue(onValueUpdated);
+    }
+  }, [value, onValueUpdated]);
+
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={styles.textInput}
+        value={value}
+        onChangeText={text => setValue(text)}
+				{...props}
+      />
+      {helperText && (
+        <Text style={styles.helperText}>{helperText}</Text>
+      )}
+    </View>
+  );
+}
+```
+
+값을 전처리하는 로직을 onValueUpdated 라는 props로 컴포넌트 외부(부모)로부터 주입받도록 abstraction 형태를 수정했습니다. 
+그리고 값이 변경 될 때 `useEffect` 훅을 통해 값을 전처리합니다.
+
+이전에는 type에 따른 분기 로직을 InputForm의 `useEffect` 훅 안에 작성해야 했고 그에 따라 condtion이 복잡해지는 문제가 있었습니다. 
+현재 구조에서는 100가지 입력값에 대해 다른 전처리가 필요하다고 해도 `useEffect` 훅이 비대해질 일은 없습니다.
+
+다만 silver bullet은 없습니다. InputForm 컴포넌트를 사용하는 쪽을 살펴보겠습니다.
+
+```tsx
+// App.tsx
+const App = () => {
+  const handleUpdateUserId = (cur: string) => cur.replace(/ /g, '');
+  const handleUpdateOtpCode = (cur: string) => cur.replace(/[^0-9]/, '');
+  const handleUpdatePhoneNumber = (cur: string) => {
+    let result = cur;
+
+    if (/^[0-9]{3}-[0-9]{5}$/.test(cur)) {
+      result = `${cur.slice(0, 8)}-${cur.slice(cur.length - 1)}`;
+    } else if (/^[0-9]{4}$/.test(cur)) {
+      result = `${cur.slice(0, cur.length - 1)}-${cur.slice(cur.length - 1)}`;
+    }
+
+    return result;
+  };
+
+  return (
+    <ScrollView keyboardShouldPersistTaps="handled">
+      <InputForm
+        onValueUpdated={handleUpdateUserId}
+        placeholder="enter your user ID"
+      />
+      <InputForm
+        onValueUpdated={handleUpdateOtpCode}
+        keyboardType="number-pad"
+        placeholder="enter verification code"
+      />
+      <InputForm
+        onValueUpdated={handleUpdatePhoneNumber}
+        keyboardType="number-pad"
+        placeholder="enter your phonenumber"
+      />
+    </ScrollView>
+  );
+};
+```
+
+컴포넌트를 사용하는 쪽에서 해야할 일이 많아진 것이 분명하게 보입니다. 이것이 단점으로 보일 수도 있습니다. 
+
+그러나 위에서 예상한 것처럼 새로운 유형의 입력 데이터가 추가 될 것이라고 예상했을 때 코드베이스의 복잡성을 높이지 않으면서 보다 유연하게 대응할 수 있는 방법이라고 생각합니다.
+
+### Conclusion
+
+개인적으로 되돌아 봤을때 react component 뿐만 아니라 재활용을 위한 util 함수를 작성할 때도 위에서 언급한 wrong abstraction을 사용했던 적이 더 많은 것 같습니다. 
+아무래도 가장 간단한, 1차원적인 방법이기 때문에 그런 방법으로 접근하지 않았었나하는 생각이 듭니다.
+
+Inversion of Control이라는 접근 방식의 변화로 코드의 복잡성을 크게 높이지 않으면서 기능 추가에 대응할 수 있는 방법을 알았으니 앞으로 중복 코드를 추출할 때 충분히 활용해 보려고 합니다. 
+특히 React Component를 설계할 때 이 점을 충분히 고려하고 설계해보려고 합니다.
+
+Abstraction을 다른 시각에서 바라볼 수 있는 시각과 이 글의 영감은 Kent.C.Dodds의 [Inversion of Control](https://kentcdodds.com/blog/inversion-of-control) article 에서 얻었습니다. 
+여러분도 한 번 읽어보기를 추천드리며 글을 줄입니다.
+
+### Reference
+
+The wrong abstraction, Sandi Metz, [https://sandimetz.com/blog/2016/1/20/the-wrong-abstraction](https://sandimetz.com/blog/2016/1/20/the-wrong-abstraction)
+
+Inversion of Control, *Kent.C.Dodds* , [https://kentcdodds.com/blog/inversion-of-control](https://kentcdodds.com/blog/inversion-of-control)
